@@ -1,11 +1,11 @@
 package com.example.twichstreams.controller;
 
+import android.content.Context;
+import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Adapter;
-import android.widget.Toast;
 
-import androidx.recyclerview.widget.LinearLayoutManager;
-
+import com.example.twichstreams.model.room.AppDatabase;
+import com.example.twichstreams.model.room.GameDataTable;
 import com.example.twichstreams.model.twitch_responce.API;
 import com.example.twichstreams.model.twitch_responce.GameDataModel;
 import com.example.twichstreams.model.twitch_responce.RetrofitKeeper;
@@ -13,7 +13,6 @@ import com.example.twichstreams.model.twitch_responce.Top;
 import com.example.twichstreams.model.twitch_responce.TwitchResponseMain;
 import com.example.twichstreams.model.twitch_responce.TwitchStreamApi;
 import com.example.twichstreams.view.UpdateView;
-import com.example.twichstreams.view.recycler_view.TwitchGamesAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,8 +23,12 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 
 public class GetDataFromServerController extends GetDataController {
+
+    AppDatabase appDatabase;
+    public boolean internetConnect = false;
+
     @Override
-   public List<GameDataModel> getData(UpdateView updateView) {
+   public List<GameDataModel> getData(UpdateView updateView, Context context) {
         Retrofit retrofit = RetrofitKeeper.getInstance();
         TwitchStreamApi twitchStreamApi = retrofit.create(TwitchStreamApi.class);
 
@@ -37,7 +40,11 @@ public class GetDataFromServerController extends GetDataController {
                 List<Top> listTop = new ArrayList<>();
                 if (response.isSuccessful()) {
                     listTop = response.body().getTop();
-                    updateView.updateView(parseDataFromServer(listTop));
+                    internetConnect = true;
+                    List<GameDataModel> gameDataModelList = parseDataFromServer(listTop);
+                    updateView.updateViewMethod(gameDataModelList);
+                    appDatabase = AppDatabase.getInstance(context);
+                    new SaveDataTask().execute(gameDataModelList);
                 }
             }
 
@@ -50,6 +57,10 @@ public class GetDataFromServerController extends GetDataController {
         return null;
     }
 
+    public boolean getInternetConnect() {
+        return internetConnect;
+    }
+
     private List<GameDataModel> parseDataFromServer(List<Top> list) {
         List<GameDataModel> listGameData = new ArrayList<>();
         for (Top top : list) {
@@ -57,4 +68,22 @@ public class GetDataFromServerController extends GetDataController {
         }
         return listGameData;
     }
+
+
+
+
+    class SaveDataTask extends AsyncTask<List<GameDataModel>, Void, Void> {
+        @Override
+        protected Void doInBackground(List<GameDataModel>... gameDataViewModelList) {
+            List<GameDataTable> gameDataTableList = new ArrayList<>();
+            for (GameDataModel gameDataModel : gameDataViewModelList[0]) {
+                GameDataTable gameDataTable = new GameDataTable(gameDataModel.getName(), gameDataModel.getViewers(), gameDataModel.getChannels(), gameDataModel.getLogo());
+                gameDataTableList.add(gameDataTable);
+
+            }
+            appDatabase.gameDataDao().insert(gameDataTableList);
+            return null;
+        }
+    }
+
 }

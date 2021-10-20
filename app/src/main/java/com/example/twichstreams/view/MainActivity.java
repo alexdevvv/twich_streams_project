@@ -19,8 +19,8 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements UpdateView {
 
     private RecyclerView recyclerView;
-    private GetDataController getDataFromServerController = new GetDataFromServerController();
-    private GetDataFromDBController getDataFromDBController;
+    private GetDataFromServerController getDataFromServerController = new GetDataFromServerController();
+    private GetDataController getDataFromDBController = new GetDataFromDBController();
     private TwitchGamesAdapter twitchGamesAdapter;
 
     @Override
@@ -29,17 +29,17 @@ public class MainActivity extends AppCompatActivity implements UpdateView {
         setContentView(R.layout.activity_main);
         recyclerView = findViewById(R.id.recycler_view);
         twitchGamesAdapter = new TwitchGamesAdapter();
-        getDataFromServerController.getData(this);
-        List<GameDataModel> gameDataModelList = getDataFromServerController.getData(this);
+        getDataFromServerController.getData(this, getApplicationContext());
+        if(!getDataFromServerController.getInternetConnect()) {
+            getDataFromDBController = new GetDataFromDBController();
+            getDataFromDBController.getData(this, getApplicationContext());
+        }
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         recyclerView.setAdapter(twitchGamesAdapter);
-        getDataFromDBController = new GetDataFromDBController();
-        getDataFromDBController.saveData(this, gameDataModelList);
-
     }
 
     @Override
-    public void updateView(List<GameDataModel> gameDataModelsList) {
+    public void updateViewMethod(List<GameDataModel> gameDataModelsList) {
         twitchGamesAdapter.setData(gameDataModelsList);
     }
 }

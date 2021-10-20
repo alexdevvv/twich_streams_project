@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface UpdateView {
 
-    void updateView(List<GameDataModel> gameDataModelsList);
+    void updateViewMethod(List<GameDataModel> gameDataModelsList);
 }
