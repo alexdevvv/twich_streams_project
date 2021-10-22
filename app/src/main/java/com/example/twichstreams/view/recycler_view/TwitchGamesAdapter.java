@@ -1,5 +1,6 @@
 package com.example.twichstreams.view.recycler_view;
 
+import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,15 +16,18 @@ import java.util.List;
 
 public class TwitchGamesAdapter extends RecyclerView.Adapter<GameViewHolder> {
     private List<GameDataModel> list;
+    Activity activity;
 
-    public TwitchGamesAdapter() {
+    public TwitchGamesAdapter(Activity activity) {
+        this.activity = activity;
         list = new ArrayList<>();
+
     }
 
     @Override
     public GameViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.game_item_view, parent, false);
-        return new GameViewHolder(view);
+        return new GameViewHolder(view, activity);
     }
 
     @Override

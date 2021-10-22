@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity implements UpdateView {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         recyclerView = findViewById(R.id.recycler_view);
-        twitchGamesAdapter = new TwitchGamesAdapter();
+        twitchGamesAdapter = new TwitchGamesAdapter(this);
         getDataFromServerController.getData(this, getApplicationContext());
         if(!getDataFromServerController.getInternetConnect()) {
             getDataFromDBController = new GetDataFromDBController();
