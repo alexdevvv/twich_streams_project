@@ -28,7 +28,7 @@ public class GetDataFromServerController extends GetDataController {
     public boolean internetConnect = false;
 
     @Override
-   public List<GameDataModel> getData(UpdateView updateView, Context context) {
+    public List<GameDataModel> getData(UpdateView updateView, Context context) {
         Retrofit retrofit = RetrofitKeeper.getInstance();
         TwitchStreamApi twitchStreamApi = retrofit.create(TwitchStreamApi.class);
 
@@ -69,10 +69,7 @@ public class GetDataFromServerController extends GetDataController {
         return listGameData;
     }
 
-
-
-
-    class SaveDataTask extends AsyncTask<List<GameDataModel>, Void, Void> {
+    private class SaveDataTask extends AsyncTask<List<GameDataModel>, Void, Void> {
         @Override
         protected Void doInBackground(List<GameDataModel>... gameDataViewModelList) {
             List<GameDataTable> gameDataTableList = new ArrayList<>();

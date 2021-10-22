@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Twich Streams</string>
+    <string name="feedback">feedback</string>
+    <string name="back">back</string>
 </resources>
